@@ -1,0 +1,24 @@
+{
+  "name": "all-sources-video-downloader",
+  "version": "1.0.0",
+  "description": "Local web application for downloading public, non-DRM videos and audio from 1,000+ sources via yt-dlp and ffmpeg",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "setup-bin": "node scripts/setup-binaries.js",
+    "test": "node --test tests"
+  },
+  "keywords": [
+    "video-downloader",
+    "yt-dlp",
+    "ffmpeg",
+    "web-app"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2",
+    "ffmpeg-static": "^5.2.0",
+    "ws": "^8.18.0"
+  }
+}

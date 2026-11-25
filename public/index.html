@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>All-Sources Video Downloader</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <div class="container">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v12m0 0-4-4m4 4 4-4" />
+            <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+          </svg>
+        </div>
+        <div>
+          <h1>All-Sources Video Downloader</h1>
+          <p class="subtitle">Public non-DRM video &amp; audio from 1,000+ platforms &amp; direct streams</p>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <div class="engine-badges" id="engineBadges">
+          <span class="badge badge-muted">Checking engine...</span>
+        </div>
+        <button type="button" class="btn btn-secondary" id="openFolderBtn" title="Open downloads folder on your computer">
+          Open Folder
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="card input-card">
+        <div class="mode-tabs" role="tablist">
+          <button type="button" class="tab-btn active" data-mode="single" role="tab" aria-selected="true">
+            Single URL
+          </button>
+          <button type="button" class="tab-btn" data-mode="batch" role="tab" aria-selected="false">
+            Batch Queue
+          </button>
+        </div>
+
+        <div id="singleMode">
+          <form id="inspectForm" class="url-row">
+            <div class="input-wrap">
+              <input
+                type="url"
+                id="urlInput"
+                placeholder="Paste video or audio URL (YouTube, Vimeo, X, TikTok, Reddit, direct .mp4/.m3u8...)"
+                autocomplete="off"
+                required
+              />
+              <button type="button" class="btn-inline" id="pasteBtn" title="Paste from clipboard">Paste</button>
+            </div>
+            <button type="submit" class="btn btn-primary" id="inspectBtn">Inspect</button>
+            <button type="button" class="btn btn-accent" id="quickDownloadBtn" title="Download immediately in Best Quality MP4">
+              Quick Download
+            </button>
+          </form>
+
+          <div class="input-options">
+            <label class="checkbox-label">
+              <input type="checkbox" id="playlistToggle" />
+              <span>Detect full playlist (instead of single video)</span>
+            </label>
+          </div>
+        </div>
+
+        <div id="batchMode" class="hidden">
+          <textarea
+            id="batchTextarea"
+            rows="4"
+            placeholder="Paste multiple URLs (one per line)..."
+          ></textarea>
+          <div class="batch-controls">
+            <label class="select-group">
+              <span>Preset</span>
+              <select id="batchPresetSelect">
+                <option value="best">Best Quality (MP4)</option>
+                <option value="2160p">4K Ultra HD (2160p MP4)</option>
+                <option value="1080p">Full HD (1080p MP4)</option>
+                <option value="720p">HD (720p MP4)</option>
+                <option value="480p">SD (480p MP4)</option>
+                <option value="audio_mp3">Audio Only (MP3)</option>
+                <option value="audio_m4a">Audio Only (M4A)</option>
+              </select>
+            </label>
+            <button type="button" class="btn btn-primary" id="batchQueueBtn">Queue All URLs</button>
+          </div>
+        </div>
+
+        <div id="feedbackBanner" class="banner hidden" role="alert"></div>
+      </section>
+
+      <section id="previewCard" class="card preview-card hidden">
+        <div class="preview-layout">
+          <div class="thumb-wrap">
+            <img id="previewThumb" alt="Media thumbnail" />
+            <span id="previewDuration" class="duration-chip">--:--</span>
+          </div>
+
+          <div class="preview-info">
+            <div class="meta-tags">
+              <span id="previewSource" class="badge badge-source">Web</span>
+              <span id="previewUploader" class="meta-muted"></span>
+              <span id="previewPlaylistTag" class="badge badge-info hidden">Playlist</span>
+            </div>
+
+            <h2 id="previewTitle">Media Title</h2>
+
+            <div class="format-controls">
+              <label class="select-group">
+                <span>Quality Preset</span>
+                <select id="presetSelect">
+                  <option value="best">Best Quality (MP4)</option>
+                  <option value="2160p">4K Ultra HD (2160p MP4)</option>
+                  <option value="1080p">Full HD (1080p MP4)</option>
+                  <option value="720p">HD (720p MP4)</option>
+                  <option value="480p">SD (480p MP4)</option>
+                  <option value="360p">Compact (360p MP4)</option>
+                  <option value="audio_mp3">Audio Only (MP3)</option>
+                  <option value="audio_m4a">Audio Only (M4A)</option>
+                </select>
+              </label>
+
+              <label class="select-group" id="advancedFormatGroup">
+                <span>Exact Format (Optional)</span>
+                <select id="exactFormatSelect">
+                  <option value="">Use selected preset</option>
+                </select>
+              </label>
+
+              <button type="button" class="btn btn-accent btn-download" id="startDownloadBtn">
+                Download
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="playlistPreview" class="playlist-box hidden">
+          <div class="playlist-header">
+            <strong id="playlistCountLabel">Playlist items</strong>
+            <span class="meta-muted">Select an individual item or click Download above for the entire playlist</span>
+          </div>
+          <ul id="playlistItems" class="playlist-list"></ul>
+        </div>
+      </section>
+
+      <section class="card queue-card">
+        <div class="section-header">
+          <div class="section-title-row">
+            <h2>Downloads &amp; History</h2>
+            <span id="queueCountBadge" class="badge badge-muted">0</span>
+          </div>
+          <button type="button" class="btn btn-ghost" id="clearCompletedBtn">Clear Finished</button>
+        </div>
+
+        <div id="emptyQueue" class="empty-state">
+          <p>No downloads yet. Paste any public video or audio URL above to begin.</p>
+        </div>
+
+        <div id="downloadsList" class="downloads-list"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Powered locally by <code>yt-dlp</code> &amp; <code>ffmpeg</code>. Files save to <code id="downloadsDirText">./downloads</code>. Only publicly accessible, non-DRM streams are supported.</span>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
